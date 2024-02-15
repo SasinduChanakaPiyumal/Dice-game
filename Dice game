@@ -1,0 +1,132 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GameApp
+{
+    class Program
+    {
+
+        static void Main(string[] args)
+        {
+            string player;
+
+            int playerDice1;
+            int playerDice2;
+            int playerDice3;
+
+            int enemyDice1;
+            int enemyDice2;
+            int enemyDice3;
+
+            int playerPoints = 0;
+            int enemyPoints = 0;
+
+            int dfltplayerPoint = 0;
+            int dfltenemyPoint = 0;
+
+            Random random = new Random();
+
+            Console.WriteLine("Enter your name...");
+            player = Console.ReadLine();
+            Console.WriteLine("Hellow  " + player);
+
+
+            while (playerPoints < 101 && enemyPoints < 101)
+            {
+                Console.WriteLine("--------------------------------");
+                Console.WriteLine("Press any key to roll the Dice.");
+                Console.WriteLine("--------------------------------");
+                Console.ReadKey();
+
+                playerDice1 = random.Next(1, 7);
+                Console.WriteLine(player + " rolled a " + playerDice1);
+
+                playerDice2 = random.Next(1, 7);
+                Console.WriteLine(player + " rolled a " + playerDice2);
+
+                if (playerDice1 == playerDice2)
+                {
+                    if (playerDice1 < 2 && playerDice2 < 2)
+                    {
+                        playerPoints = 0;
+                    }
+                    else {
+                        playerDice3 = random.Next(1, 7);
+                        Console.WriteLine(player + " rolled a " + playerDice3);
+
+                        dfltplayerPoint = playerDice1 + playerDice2 + playerDice3;
+                        playerPoints = playerPoints + dfltplayerPoint;
+                    }
+                    
+                }
+                else
+                {
+                    dfltplayerPoint = playerDice1 + playerDice2;
+                    playerPoints = playerPoints + dfltplayerPoint;
+                }
+                Console.WriteLine(player + "'s score of this row is " + dfltplayerPoint);
+                Console.WriteLine(player + "'s total Score is " + playerPoints);
+
+                Console.WriteLine("++++++++++++++++++++++++++++++++");
+                
+                System.Threading.Thread.Sleep(1000);
+
+                enemyDice1 = random.Next(1, 7);
+                Console.WriteLine("Enemy rooled a " + enemyDice1);
+
+                enemyDice2 = random.Next(1, 7);
+                Console.WriteLine("Enemy rooled a " + enemyDice2);
+
+                if (enemyDice1 == enemyDice2)
+                {
+                    if (enemyDice1 < 2 && enemyDice2 < 2)
+                    {
+                        enemyPoints = 0;
+                    }
+                    else {
+                        enemyDice3 = random.Next(1, 7);
+                        Console.WriteLine("Enemy rolled a " + enemyDice3);
+
+                        dfltenemyPoint = enemyDice1 + enemyDice2 + enemyDice3;
+                        enemyPoints = enemyPoints + dfltenemyPoint;
+                    }
+                }
+                else
+                {
+                    dfltenemyPoint = enemyDice1 + enemyDice2;
+                    enemyPoints = enemyPoints + dfltenemyPoint;
+                }
+                Console.WriteLine("Enemy's score of  this row is " + dfltenemyPoint);
+                Console.WriteLine("Enemy's total Score is " + enemyPoints);
+
+
+
+              //  Console.ReadKey();
+            }
+            Console.WriteLine("<<<<<<<<< SCORE >>>>>>>>");
+            Console.WriteLine(player + " : " + playerPoints + "   Enemy :" + enemyPoints);
+            if (playerPoints > enemyPoints)
+            {
+                Console.WriteLine("********************************");
+                Console.WriteLine(player + " you win the game!");
+                Console.WriteLine("********************************");
+            }
+            else if (playerPoints < enemyPoints)
+            {
+                Console.WriteLine("********************************");
+                Console.WriteLine("Enemy wins this round!");
+                Console.WriteLine("********************************");
+            }
+            else
+            {
+                Console.WriteLine("********************************");
+                Console.WriteLine("Draw!");
+                Console.WriteLine("********************************");
+            }
+            Console.ReadKey();
+        }
+    }
+}
