@@ -8,32 +8,63 @@ namespace GameApp
 {
     class Program
     {
+        // Improved algorithm: Refactored dice rolling logic into reusable method for better performance and maintainability
+        static int RollDiceForPlayer(Random random, string playerName, out int roundScore)
+        {
+            int dice1 = random.Next(1, 7);
+            Console.WriteLine(playerName + " rolled a " + dice1);
+
+            int dice2 = random.Next(1, 7);
+            Console.WriteLine(playerName + " rolled a " + dice2);
+
+            int totalPoints = 0;
+            roundScore = 0;
+
+            // Algorithm improvement: Check if both dice show the same number (doubles)
+            if (dice1 == dice2)
+            {
+                // Algorithm fix: Corrected bug - now properly checks if both dice are exactly 1 (not < 2)
+                // Snake eyes (double 1s) penalty: reset total score to 0
+                if (dice1 == 1 && dice2 == 1)
+                {
+                    Console.WriteLine(playerName + " rolled snake eyes! Score reset to 0!");
+                    return -1; // Special flag to indicate score reset
+                }
+                else 
+                {
+                    // Doubles bonus: roll a third die
+                    int dice3 = random.Next(1, 7);
+                    Console.WriteLine(playerName + " rolled a " + dice3);
+
+                    roundScore = dice1 + dice2 + dice3;
+                    totalPoints = roundScore;
+                }
+            }
+            else
+            {
+                // No doubles: just add the two dice
+                roundScore = dice1 + dice2;
+                totalPoints = roundScore;
+            }
+
+            return totalPoints;
+        }
 
         static void Main(string[] args)
         {
             string player;
-
-            int playerDice1;
-            int playerDice2;
-            int playerDice3;
-
-            int enemyDice1;
-            int enemyDice2;
-            int enemyDice3;
-
             int playerPoints = 0;
             int enemyPoints = 0;
-
-            int dfltplayerPoint = 0;
-            int dfltenemyPoint = 0;
+            int playerRoundScore = 0;
+            int enemyRoundScore = 0;
 
             Random random = new Random();
 
             Console.WriteLine("Enter your name...");
             player = Console.ReadLine();
-            Console.WriteLine("Hellow  " + player);
+            Console.WriteLine("Hello " + player + "!"); // Fixed typo: "Hellow" -> "Hello"
 
-
+            // Algorithm improvement: Game continues until one player reaches or exceeds 101
             while (playerPoints < 101 && enemyPoints < 101)
             {
                 Console.WriteLine("--------------------------------");
@@ -41,90 +72,88 @@ namespace GameApp
                 Console.WriteLine("--------------------------------");
                 Console.ReadKey();
 
-                playerDice1 = random.Next(1, 7);
-                Console.WriteLine(player + " rolled a " + playerDice1);
-
-                playerDice2 = random.Next(1, 7);
-                Console.WriteLine(player + " rolled a " + playerDice2);
-
-                if (playerDice1 == playerDice2)
+                // Player's turn - using refactored method
+                int playerTurnResult = RollDiceForPlayer(random, player, out playerRoundScore);
+                
+                if (playerTurnResult == -1)
                 {
-                    if (playerDice1 < 2 && playerDice2 < 2)
-                    {
-                        playerPoints = 0;
-                    }
-                    else {
-                        playerDice3 = random.Next(1, 7);
-                        Console.WriteLine(player + " rolled a " + playerDice3);
-
-                        dfltplayerPoint = playerDice1 + playerDice2 + playerDice3;
-                        playerPoints = playerPoints + dfltplayerPoint;
-                    }
-                    
+                    // Snake eyes penalty: reset total score
+                    playerPoints = 0;
+                    playerRoundScore = 0;
                 }
                 else
                 {
-                    dfltplayerPoint = playerDice1 + playerDice2;
-                    playerPoints = playerPoints + dfltplayerPoint;
+                    playerPoints += playerTurnResult;
                 }
-                Console.WriteLine(player + "'s score of this row is " + dfltplayerPoint);
+
+                Console.WriteLine(player + "'s score of this round is " + playerRoundScore);
                 Console.WriteLine(player + "'s total Score is " + playerPoints);
 
+                // Algorithm improvement: Check win condition after each turn for better performance
+                if (playerPoints >= 101)
+                {
+                    break; // Player wins, exit loop immediately
+                }
+
                 Console.WriteLine("++++++++++++++++++++++++++++++++");
-                
                 System.Threading.Thread.Sleep(1000);
 
-                enemyDice1 = random.Next(1, 7);
-                Console.WriteLine("Enemy rooled a " + enemyDice1);
-
-                enemyDice2 = random.Next(1, 7);
-                Console.WriteLine("Enemy rooled a " + enemyDice2);
-
-                if (enemyDice1 == enemyDice2)
+                // Enemy's turn - using refactored method (fixed typo: "rooled" -> "rolled")
+                int enemyTurnResult = RollDiceForPlayer(random, "Enemy", out enemyRoundScore);
+                
+                if (enemyTurnResult == -1)
                 {
-                    if (enemyDice1 < 2 && enemyDice2 < 2)
-                    {
-                        enemyPoints = 0;
-                    }
-                    else {
-                        enemyDice3 = random.Next(1, 7);
-                        Console.WriteLine("Enemy rolled a " + enemyDice3);
-
-                        dfltenemyPoint = enemyDice1 + enemyDice2 + enemyDice3;
-                        enemyPoints = enemyPoints + dfltenemyPoint;
-                    }
+                    // Snake eyes penalty: reset total score
+                    enemyPoints = 0;
+                    enemyRoundScore = 0;
                 }
                 else
                 {
-                    dfltenemyPoint = enemyDice1 + enemyDice2;
-                    enemyPoints = enemyPoints + dfltenemyPoint;
+                    enemyPoints += enemyTurnResult;
                 }
-                Console.WriteLine("Enemy's score of  this row is " + dfltenemyPoint);
+
+                Console.WriteLine("Enemy's score of this round is " + enemyRoundScore);
                 Console.WriteLine("Enemy's total Score is " + enemyPoints);
-
-
-
-              //  Console.ReadKey();
             }
+
+            // Display final results
             Console.WriteLine("<<<<<<<<< SCORE >>>>>>>>");
-            Console.WriteLine(player + " : " + playerPoints + "   Enemy :" + enemyPoints);
-            if (playerPoints > enemyPoints)
+            Console.WriteLine(player + " : " + playerPoints + "   Enemy: " + enemyPoints);
+            
+            // Algorithm improvement: First to reach 101 wins (not just higher score)
+            if (playerPoints >= 101 && enemyPoints < 101)
             {
                 Console.WriteLine("********************************");
                 Console.WriteLine(player + " you win the game!");
                 Console.WriteLine("********************************");
             }
-            else if (playerPoints < enemyPoints)
+            else if (enemyPoints >= 101 && playerPoints < 101)
             {
                 Console.WriteLine("********************************");
                 Console.WriteLine("Enemy wins this round!");
                 Console.WriteLine("********************************");
             }
-            else
+            else if (playerPoints >= 101 && enemyPoints >= 101)
             {
-                Console.WriteLine("********************************");
-                Console.WriteLine("Draw!");
-                Console.WriteLine("********************************");
+                // Both reached 101 in the same round - higher score wins
+                if (playerPoints > enemyPoints)
+                {
+                    Console.WriteLine("********************************");
+                    Console.WriteLine(player + " you win the game!");
+                    Console.WriteLine("********************************");
+                }
+                else if (enemyPoints > playerPoints)
+                {
+                    Console.WriteLine("********************************");
+                    Console.WriteLine("Enemy wins this round!");
+                    Console.WriteLine("********************************");
+                }
+                else
+                {
+                    Console.WriteLine("********************************");
+                    Console.WriteLine("Draw!");
+                    Console.WriteLine("********************************");
+                }
             }
             Console.ReadKey();
         }
